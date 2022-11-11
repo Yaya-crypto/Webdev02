@@ -1,10 +1,10 @@
-
 import React from "react";
 import ReactDOM from "react-dom/client";
-import ReactCardFlip from 'react-card-flip';
+import ReactCardFlip from "react-card-flip";
 import "./css/index.css";
+import { Children, cloneElement } from "react";
 
-function Header(props){
+function Header(props) {
   return (
     <header className="header">
       <p>Memory Card Game</p>
@@ -17,95 +17,90 @@ class MemoryGame extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
-    }
+      cardValues: shuffleArray(["A", "B", "C", "D", "A", "B", "C", "D"]),
+      openCards: [],
+      clearedCardss: [],
+    };
   }
 
+  handleClick() {
+    if (true) {
+    }
+  }
   render() {
     return (
       <body>
         <Header />
-        <Board 
-          cardValues = {['A','B','C','D','A','B','C', 'D']}
-        />
+        <Board cardValues={this.state.cardValues} />
       </body>
     );
   }
 }
 
-
 // const winner = participants[Math.floor(Math.random() * participants.length)]
 class Board extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+  render() {
+    let arr = this.props.cardValues.slice(0, 4);
+    let arr2 = this.props.cardValues.slice(4);
 
-    }
-  }
-
-  renderCard() {
-    const randomValue = this.props.cardValues[[Math.floor(Math.random() * this.props.cardValues.length)]];
-    const indexValue = this.props.cardValues.indexOf(randomValue);
-    this.props.cardValues.splice(indexValue,1);
-    return <Card 
-      value={randomValue}
-    />;
-
-  }
-
-  render()  {
     return (
       <div className="board-game">
         <div className="card-row">
-          {this.renderCard()}
-          {this.renderCard()}
-          {this.renderCard()}
-          {this.renderCard()}
+          {arr.map((item) => (
+            <Card value={item} />
+          ))}
         </div>
 
         <div className="card-row">
-          {this.renderCard()}
-          {this.renderCard()}
-          {this.renderCard()}
-          {this.renderCard()}
+          {arr2.map((item) => (
+            <Card value={item} />
+          ))}
         </div>
       </div>
     );
   }
 }
 
-class Card extends React.Component{
+class Card extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-        isFlipped: false
+      isFlipped: false,
     };
     this.handleClick = this.handleClick.bind(this);
   }
 
   handleClick(e) {
     e.preventDefault();
-    this.setState(prevState => ({ isFlipped: !prevState.isFlipped }));
+    this.setState((prevState) => ({ isFlipped: !prevState.isFlipped }));
   }
 
-    render() {
+  render() {
+    if (this.state.isFlipped === false) {
+      return <div className="card-front" onClick={this.handleClick}></div>;
+    } else {
       return (
-        <ReactCardFlip isFlipped={this.state.isFlipped} flipDirection="horizontal">
-          <div className="card-front" onClick={this.handleClick}></div>
-          <div className="card-back"> {this.props.value}</div>
-        </ReactCardFlip>
-      )
+        <div className="card-back">
+          {" "}
+          <p>{this.props.value}</p>{" "}
+        </div>
+      );
     }
+  }
 }
-
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<MemoryGame />);
 
-function isGameOver() {
+function shuffleArray(array) {
+  for (var i = array.length - 1; i > 0; i--) {
+    // Generate random number
+    var j = Math.floor(Math.random() * (i + 1));
 
-}
+    var temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
 
-function calculateTie() {
-
+  return array;
 }
