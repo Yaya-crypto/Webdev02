@@ -10,29 +10,36 @@ function Header(props) {
     </header>
   );
 }
- function Board(props) {
-  const [cardValues, setCardValues] = useState(shuffleArray(["A", "B", "C", "D", "A", "B", "C", "D"]))
-  const [selectCards, setSelectCards] = useState([])
-  const [isFlippedArr, setIsFlippedArr] = useState([])
+
+function Board() {
+  const [cardValues, setCardValues] = useState(
+    shuffleArray(["A", "B", "C", "D", "A", "B", "C", "D"])
+  );
+  const [selectCards, setSelectCards] = useState([]);
+  const [isFlippedArr, setIsFlippedArr] = useState([]);
 
   function compareCards(cardValue) {
     if (selectCards.length < 1) {
-      setSelectCards([cardValue, ...selectCards])
-    } else if (selectCards[0] != cardValue) {
-      setIsFlippedArr([selectCards[0], cardValue, ...isFlippedArr])
-      setSelectCards([])
+      setSelectCards([cardValue, ...selectCards]);
+    } else {
+      if (selectCards[0] != cardValue) {
+        setIsFlippedArr([selectCards[0], cardValue, ...isFlippedArr]);
+      }
+      setSelectCards([]);
     }
   }
 
+
   return (
     <>
-      <Header />
+      <Header 
+      />
       <div className="board-game">
         <div className="card-row">
           {cardValues.slice(0, 4).map((item) => (
             <Card
               value={item}
-              onClickCard={() => compareCards(item)}
+              onClickCard={compareCards}
               flippedCards={isFlippedArr}
               setFlippedCards={setIsFlippedArr}
             />
@@ -43,7 +50,7 @@ function Header(props) {
           {cardValues.slice(4).map((item) => (
             <Card
               value={item}
-              onClickCard={() => compareCards(item)}
+              onClickCard={compareCards}
               flippedCards={isFlippedArr}
               setFlippedCards={setIsFlippedArr}
             />
@@ -51,40 +58,47 @@ function Header(props) {
         </div>
       </div>
     </>
-  )
+  );
 }
 
- function Card(props) {
+export default function Card(props) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [cardValue, setCardValue] = useState('');
+  const [cardValue, setCardValue] = useState(props.value);
 
   function handleClick(e) {
-    setIsFlipped(!isFlipped)
-    props.onClickCard(props.value);
+    setIsFlipped(!isFlipped);
+    props.onClickCard(cardValue);
     e.preventDefault();
   }
 
   useEffect(() => {
     if (props.flippedCards.length !== 0) {
       for (let i = 0; i < props.flippedCards.length; i++) {
-        if (props.flippedCards[i] === props.value) {
-          setIsFlipped(false)
-          props.setFlippedCards(props.flippedCards.slice(0, i) + props.flippedCards.slice(i+1, props.flippedCards.length))
+        if (props.flippedCards[i] === cardValue) {
+          setTimeout(() => {
+            setIsFlipped(false);
+          }, 500);
+          props.setFlippedCards(
+            props.flippedCards.slice(0, i) +
+              props.flippedCards.slice(i + 1, props.flippedCards.length)
+          );
         }
       }
     }
-  }, [props.flippedCards])
+  }, [props.flippedCards]);
 
   return (
     <>
-      {!isFlipped ? 
-      <div className="card-front" onClick={(e) => handleClick(e)}></div> : 
-      <div className="card-back">
-        {" "}
-        <p>{props.value}</p>{" "}
-      </div>}
+      {!isFlipped ? (
+        <div className="card-front" onClick={(e) => handleClick(e)}></div>
+      ) : (
+        <div className="card-back">
+          {" "}
+          <p>{cardValue}</p>{" "}
+        </div>
+      )}
     </>
-  )
+  );
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
