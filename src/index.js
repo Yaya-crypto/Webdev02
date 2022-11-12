@@ -6,7 +6,9 @@ function Header(props) {
   return (
     <header className="header">
       <p>Memory Card Game</p>
-      <button className="button-3">New Game</button>
+      <button onClick={props.resetGame} className="button-3">
+        New Game
+      </button>
     </header>
   );
 }
@@ -29,39 +31,52 @@ function Board() {
     }
   }
 
+  function newGame() {
+    setSelectCards([]);
+    setIsFlippedArr(["A", "B", "C", "D", "A", "B", "C", "D"]);
+    setCardValues(shuffleArray(["A", "B", "C", "D", "A", "B", "C", "D"]));
+    keyForBoard += 1;
+  }
 
   return (
-    <>
-      <Header 
-      />
-      <div className="board-game">
-        <div className="card-row">
-          {cardValues.slice(0, 4).map((item) => (
-            <Card
-              value={item}
-              onClickCard={compareCards}
-              flippedCards={isFlippedArr}
-              setFlippedCards={setIsFlippedArr}
-            />
-          ))}
-        </div>
+    <div className="main-board">
+      <>
+        <Header resetGame={newGame} />
+        <div className="board-game">
+          <div className="card-row">
+            {cardValues.slice(0, 4).map((item, i) => (
+              <Card
+                value={item}
+                onClickCard={compareCards}
+                flippedCards={isFlippedArr}
+                setFlippedCards={setIsFlippedArr}
+                cardValues={cardValues}
+                key={i}
+                theRealKey={i}
+              />
+            ))}
+          </div>
 
-        <div className="card-row">
-          {cardValues.slice(4).map((item) => (
-            <Card
-              value={item}
-              onClickCard={compareCards}
-              flippedCards={isFlippedArr}
-              setFlippedCards={setIsFlippedArr}
-            />
-          ))}
+          <div className="card-row">
+            {cardValues.slice(4).map((item, i) => (
+              <Card
+                value={item}
+                onClickCard={compareCards}
+                flippedCards={isFlippedArr}
+                setFlippedCards={setIsFlippedArr}
+                cardValues={cardValues}
+                key={i + 4} // fake ass key
+                theRealKey={i + 4} // real ass key
+              />
+            ))}
+          </div>
         </div>
-      </div>
-    </>
+      </>
+    </div>
   );
 }
 
-export default function Card(props) {
+function Card(props) {
   const [isFlipped, setIsFlipped] = useState(false);
   const [cardValue, setCardValue] = useState(props.value);
 
@@ -87,6 +102,14 @@ export default function Card(props) {
     }
   }, [props.flippedCards]);
 
+  useEffect(() => {
+    for (let i = 0; i < props.cardValues.length; i++) {
+      if (i === props.theRealKey) {
+        setCardValue(props.cardValues[i]);
+      }
+    }
+  }, [props.cardValues]);
+
   return (
     <>
       {!isFlipped ? (
@@ -94,15 +117,16 @@ export default function Card(props) {
       ) : (
         <div className="card-back">
           {" "}
-          <p>{cardValue}</p>{" "}
+          <p className="card-value">{cardValue}</p>{" "}
         </div>
       )}
     </>
   );
 }
 
+let keyForBoard = 1;
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<Board />);
+root.render(<Board key={keyForBoard} />);
 
 function shuffleArray(array) {
   for (var i = array.length - 1; i > 0; i--) {
