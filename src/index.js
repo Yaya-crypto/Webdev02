@@ -1,8 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
-import ReactCardFlip from "react-card-flip";
 import "./css/index.css";
-import { Children, cloneElement } from "react";
 
 function Header(props) {
   return (
@@ -12,85 +10,85 @@ function Header(props) {
     </header>
   );
 }
+ function Board(props) {
+  const [cardValues, setCardValues] = useState(shuffleArray(["A", "B", "C", "D", "A", "B", "C", "D"]))
+  const [selectCards, setSelectCards] = useState([])
+  const [isFlippedArr, setIsFlippedArr] = useState([])
 
-class MemoryGame extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      cardValues: shuffleArray(["A", "B", "C", "D", "A", "B", "C", "D"]),
-      openCards: [],
-      clearedCardss: [],
-    };
-  }
-
-  handleClick() {
-    if (true) {
+  function compareCards(cardValue) {
+    if (selectCards.length < 1) {
+      setSelectCards([cardValue, ...selectCards])
+    } else if (selectCards[0] != cardValue) {
+      setIsFlippedArr([selectCards[0], cardValue, ...isFlippedArr])
+      setSelectCards([])
     }
   }
-  render() {
-    return (
-      <body>
-        <Header />
-        <Board cardValues={this.state.cardValues} />
-      </body>
-    );
-  }
-}
 
-// const winner = participants[Math.floor(Math.random() * participants.length)]
-class Board extends React.Component {
-  render() {
-    let arr = this.props.cardValues.slice(0, 4);
-    let arr2 = this.props.cardValues.slice(4);
-
-    return (
+  return (
+    <>
+      <Header />
       <div className="board-game">
         <div className="card-row">
-          {arr.map((item) => (
-            <Card value={item} />
+          {cardValues.slice(0, 4).map((item) => (
+            <Card
+              value={item}
+              onClickCard={() => compareCards(item)}
+              flippedCards={isFlippedArr}
+              setFlippedCards={setIsFlippedArr}
+            />
           ))}
         </div>
 
         <div className="card-row">
-          {arr2.map((item) => (
-            <Card value={item} />
+          {cardValues.slice(4).map((item) => (
+            <Card
+              value={item}
+              onClickCard={() => compareCards(item)}
+              flippedCards={isFlippedArr}
+              setFlippedCards={setIsFlippedArr}
+            />
           ))}
         </div>
       </div>
-    );
-  }
+    </>
+  )
 }
 
-class Card extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isFlipped: false,
-    };
-    this.handleClick = this.handleClick.bind(this);
-  }
+ function Card(props) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [cardValue, setCardValue] = useState('');
 
-  handleClick(e) {
+  function handleClick(e) {
+    setIsFlipped(!isFlipped)
+    props.onClickCard(props.value);
     e.preventDefault();
-    this.setState((prevState) => ({ isFlipped: !prevState.isFlipped }));
   }
 
-  render() {
-    if (this.state.isFlipped === false) {
-      return <div className="card-front" onClick={this.handleClick}></div>;
-    } else {
-      return (
-        <div className="card-back">
-          {" "}
-          <p>{this.props.value}</p>{" "}
-        </div>
-      );
+  useEffect(() => {
+    if (props.flippedCards.length !== 0) {
+      for (let i = 0; i < props.flippedCards.length; i++) {
+        if (props.flippedCards[i] === props.value) {
+          setIsFlipped(false)
+          props.setFlippedCards(props.flippedCards.slice(0, i) + props.flippedCards.slice(i+1, props.flippedCards.length))
+        }
+      }
     }
-  }
+  }, [props.flippedCards])
+
+  return (
+    <>
+      {!isFlipped ? 
+      <div className="card-front" onClick={(e) => handleClick(e)}></div> : 
+      <div className="card-back">
+        {" "}
+        <p>{props.value}</p>{" "}
+      </div>}
+    </>
+  )
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<MemoryGame />);
+root.render(<Board />);
 
 function shuffleArray(array) {
   for (var i = array.length - 1; i > 0; i--) {
