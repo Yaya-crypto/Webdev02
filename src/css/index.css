@@ -1,4 +1,4 @@
-body {
+.main-board {
   margin: 0;
   height: 100vh;
   display: grid;
@@ -33,6 +33,9 @@ body {
   width: 150px;
   background-color: #3c4b4f;
   border-style: solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .header {
@@ -111,3 +114,10 @@ p {
   background-color: #9e66ae;
   box-shadow: rgba(20, 70, 32, 0.2) 0 1px 0 inset;
 }
+
+.card-value {
+  text-align: center;
+  font-size: 2vw;
+}
+
+
