@@ -19,6 +19,7 @@ function Board() {
   );
   const [selectCards, setSelectCards] = useState([]);
   const [isFlippedArr, setIsFlippedArr] = useState([]);
+  const [restartGame, setIsRestartGame] = useState(false);
 
   function compareCards(cardValue) {
     if (selectCards.length < 1) {
@@ -33,9 +34,9 @@ function Board() {
 
   function newGame() {
     setSelectCards([]);
-    setIsFlippedArr(["A", "B", "C", "D", "A", "B", "C", "D"]);
+    setIsFlippedArr([]);
     setCardValues(shuffleArray(["A", "B", "C", "D", "A", "B", "C", "D"]));
-    keyForBoard += 1;
+    setIsRestartGame(!restartGame);
   }
 
   return (
@@ -53,6 +54,7 @@ function Board() {
                 cardValues={cardValues}
                 key={i}
                 theRealKey={i}
+                gameRestart={restartGame}
               />
             ))}
           </div>
@@ -67,6 +69,7 @@ function Board() {
                 cardValues={cardValues}
                 key={i + 4} // fake ass key
                 theRealKey={i + 4} // real ass key
+                gameRestart={restartGame}
               />
             ))}
           </div>
@@ -110,6 +113,9 @@ function Card(props) {
     }
   }, [props.cardValues]);
 
+  useEffect(() => {
+    setIsFlipped(false);
+  }, [props.gameRestart]);
   return (
     <>
       {!isFlipped ? (
